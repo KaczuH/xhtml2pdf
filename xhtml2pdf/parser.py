@@ -594,33 +594,6 @@ def pisaLoop(node, context, path=None, **kw):
         if "-pdf-word-wrap" in context.cssAttr:
             context.frag.wordWrap = context.cssAttr["-pdf-word-wrap"]
 
-        # handle keep-in-frame
-        keepInFrameMode = None
-        keepInFrameMaxWidth = 0
-        keepInFrameMaxHeight = 0
-        if "-pdf-keep-in-frame-mode" in context.cssAttr:
-            value = str(
-                context.cssAttr["-pdf-keep-in-frame-mode"]).strip().lower()
-            if value in ("shrink", "error", "overflow", "truncate"):
-                keepInFrameMode = value
-            else:
-                keepInFrameMode = "shrink"
-            # Added because we need a default value.
-
-        if "-pdf-keep-in-frame-max-width" in context.cssAttr:
-            keepInFrameMaxWidth = getSize(
-                "".join(context.cssAttr["-pdf-keep-in-frame-max-width"]))
-        if "-pdf-keep-in-frame-max-height" in context.cssAttr:
-            keepInFrameMaxHeight = getSize(
-                "".join(context.cssAttr["-pdf-keep-in-frame-max-height"]))
-
-        # ignore nested keep-in-frames, tables have their own KIF handling
-        keepInFrame = keepInFrameMode is not None and context.keepInFrameIndex is None
-        if keepInFrame:
-            # keep track of current story index, so we can wrap everythink
-            # added after this point in a KeepInFrame
-            context.keepInFrameIndex = len(context.story)
-
         # BEGIN tag
         klass = globals().get("pisaTag%s" %
                               node.tagName.replace(":", "").upper(), None)
@@ -664,19 +637,6 @@ def pisaLoop(node, context, path=None, **kw):
             if frameBreakAfter:
                 context.addStory(FrameBreak())
 
-        if keepInFrame:
-            # get all content added after start of -pdf-keep-in-frame and wrap
-            # it in a KeepInFrame
-            substory = context.story[context.keepInFrameIndex:]
-            context.story = context.story[:context.keepInFrameIndex]
-            context.story.append(
-                KeepInFrame(
-                    content=substory,
-                    maxWidth=keepInFrameMaxWidth,
-                    maxHeight=keepInFrameMaxHeight,
-                    mode=keepInFrameMode))
-            # mode wasn't being used; it is necessary for tables or images at
-            # end of page.
             context.keepInFrameIndex = None
 
         # Static block, END
