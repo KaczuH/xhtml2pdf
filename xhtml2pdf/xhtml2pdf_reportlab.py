@@ -249,9 +249,9 @@ class PmlPageTemplate(PageTemplate):
                 else:
                     pisaBackground = self.pisaBackground
 
-            if pisaBackground:
-                self.pisaBackgroundList.append(pisaBackground)
-            else:
+            self.pisaBackgroundList.append(pisaBackground)
+
+            if not pisaBackground:
                 if self.isPortrait():
                     canvas.drawImage(self.img, 0, self.ph - self.h, self.w, self.h)
                 elif self.isLandscape():
