@@ -306,6 +306,7 @@ class pisaTagTD(pisaTag):
             tdata.rowh = tdata.rowh + \
                 ((row + 1 - len(tdata.rowh)) * [_width()])
         if not rspan:
+            height = None
             height = c.frag.height or self.attr.get('height', None)
             if height is not None:
                 tdata.rowh[row] = _height(height)
